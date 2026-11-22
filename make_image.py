@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Draw a newspaper front-page image summing up world news of Saturday 21 November 2026.
+"""Dense front-page image: world news of Saturday 21 November 2026 (v2).
 
-Shapes and text only (PIL). No photos, no network. Deterministic output.
-Writes entry.png beside this file (1024x1024 PNG).
+42 stories, 7 regions, world map with pins, UTC timeline, day-in-numbers,
+source + confidence on every story, DATE CHECK box. Shapes/text only (PIL).
+Writes entry.png beside this file (1024x1024 PNG, deterministic).
 """
 from PIL import Image, ImageDraw, ImageFont
 import os
@@ -11,19 +12,22 @@ W, H = 1024, 1024
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "entry.png")
 
 SERIF_B = "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"
-SERIF = "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"
 SANS_B = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 SANS = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 
-PAPER = (250, 246, 236)
-INK = (28, 28, 32)
-RED = (176, 32, 32)
-BLUE = (30, 70, 140)
-GOLD = (176, 128, 20)
-GREY = (110, 110, 115)
-LIGHT = (238, 231, 214)
-SKY = (198, 220, 240)
-DARKBOX = (40, 44, 58)
+PAPER = (252, 250, 244)
+INK = (24, 24, 30)
+RED = (178, 30, 30)
+BLUE = (24, 62, 138)
+TEAL = (12, 110, 110)
+GREEN = (26, 120, 62)
+ORANGE = (196, 100, 16)
+PURPLE = (96, 44, 140)
+GREY = (96, 96, 104)
+LIGHT = (240, 236, 224)
+DARK = (32, 36, 50)
+GOLD = (255, 214, 90)
+WHITE = (255, 255, 255)
 
 img = Image.new("RGB", (W, H), PAPER)
 d = ImageDraw.Draw(img)
@@ -48,8 +52,8 @@ def wrap(text, font, maxw):
     return lines
 
 
-def draw_wrap(x, y, text, font, maxw, fill=INK, leading=4):
-    lines = wrap(text, font, maxw)
+def draw_wrap(x, y, text, font, maxw, fill=INK, leading=2, max_lines=99):
+    lines = wrap(text, font, maxw)[:max_lines]
     lh = font.size + leading
     for ln in lines:
         d.text((x, y), ln, font=font, fill=fill)
@@ -57,130 +61,241 @@ def draw_wrap(x, y, text, font, maxw, fill=INK, leading=4):
     return y
 
 
-def center_text(cx, y, text, font, fill=INK):
+def center(cx, y, text, font, fill=INK):
     w = d.textlength(text, font=font)
     d.text((cx - w / 2, y), text, font=font, fill=fill)
     return y + font.size
 
 
+def pin(cx, cy, n, col=RED):
+    d.ellipse([cx - 9, cy - 9, cx + 9, cy + 9], fill=col, outline=WHITE, width=2)
+    t = str(n)
+    f = F(SANS_B, 11 if n < 10 else 9)
+    w = d.textlength(t, font=f)
+    d.text((cx - w / 2, cy - f.size / 2 - 1), t, font=f, fill=WHITE)
+
+
+def tag(x, y, text, col):
+    f = F(SANS_B, 9)
+    w = d.textlength(text, font=f) + 8
+    d.rectangle([x, y, x + w, y + 14], fill=col)
+    d.text((x + 4, y + 2), text, font=f, fill=WHITE)
+    return x + w + 4
+
+
 # ---------- Masthead ----------
-d.rectangle([0, 0, W, 148], fill=DARKBOX)
-center_text(W // 2, 14, "THE WORLD TODAY", F(SERIF_B, 62), fill=(255, 255, 255))
-center_text(W // 2, 86, "Saturday 21 November 2026  •  World News in One Picture", F(SANS_B, 24), fill=(240, 220, 160))
-d.rectangle([0, 148, W, 156], fill=RED)
+d.rectangle([0, 0, W, 86], fill=DARK)
+center(W // 2, 6, "THE WORLD TODAY", F(SERIF_B, 44), fill=WHITE)
+center(W // 2, 56, "Saturday 21 November 2026  •  42 stories  •  7 regions  •  World news in one picture", F(SANS_B, 15), fill=GOLD)
+d.rectangle([0, 86, W, 92], fill=RED)
+# how-to-read strip
+d.rectangle([0, 92, W, 112], fill=LIGHT)
+center(W // 2, 96, "HOW TO READ: pins match story numbers  •  source + REPORTED / FORECAST / CLAIM / DISPUTED on every story  •  DATE CHECK at foot", F(SANS_B, 11), fill=INK)
 
-# ---------- Lead story ----------
-d.rectangle([24, 172, 1000, 178], fill=INK)
-center_text(W // 2, 186, "PEACE TALKS BY DAY, MISSILES BY NIGHT", F(SERIF_B, 40), fill=RED)
-y = draw_wrap(60, 236, "Trump, Xi and Putin hold first-ever three-way summit in Shenzhen — "
-                      "hours later Russia fires 110+ missiles and 400+ drones at Ukraine",
-              F(SANS_B, 25), 904)
-# two lead panels
-# left: summit table
-d.rectangle([36, 322, 500, 540], outline=INK, width=3, fill=SKY)
-d.rectangle([36, 322, 500, 356], fill=BLUE)
-center_text(268, 328, "SHENZHEN SUMMIT", F(SANS_B, 22), fill=(255, 255, 255))
-# table
-d.ellipse([120, 430, 420, 500], fill=(120, 84, 48), outline=INK, width=3)
-# three leaders: simple figures with flag colours
-for cx, col, label in [(150, (200, 40, 40), "USA"), (268, (210, 30, 30), "CHINA"), (386, (40, 80, 180), "RUSSIA")]:
-    d.ellipse([cx - 26, 368, cx + 26, 420], fill=(240, 210, 170), outline=INK, width=2)
-    d.rectangle([cx - 30, 420, cx + 30, 462], fill=col, outline=INK, width=2)
-    center_text(cx, 468, label, F(SANS_B, 18), fill=(255, 255, 255))
-d.rectangle([36, 498, 500, 540], fill=(255, 255, 255))
-draw_wrap(52, 504, "Trump calls Putin 'my friend'; 'very good talks' — no breakthrough", F(SANS, 16), 432)
-# right: barrage
-d.rectangle([524, 322, 988, 540], outline=INK, width=3, fill=(60, 50, 70))
-d.rectangle([524, 322, 988, 356], fill=RED)
-center_text(756, 328, "KYIV UNDER FIRE", F(SANS_B, 22), fill=(255, 255, 255))
-# skyline
-for bx, bh in [(545, 90), (600, 130), (660, 100), (720, 150), (790, 110), (850, 140), (910, 95)]:
-    d.rectangle([bx, 510 - bh, bx + 46, 510], fill=(30, 30, 40), outline=(0, 0, 0), width=1)
-    for wy in range(510 - bh + 10, 500, 22):
-        d.rectangle([bx + 8, wy, bx + 16, wy + 8], fill=(255, 220, 120))
-        d.rectangle([bx + 26, wy, bx + 34, wy + 8], fill=(255, 220, 120))
-# missiles
-for mx, my in [(580, 380), (680, 365), (800, 385), (900, 370)]:
-    d.line([mx, my, mx + 46, my + 52], fill=(255, 160, 60), width=5)
-    d.ellipse([mx + 40, my + 46, mx + 56, my + 62], fill=(255, 90, 40))
-    d.polygon([(mx - 4, my - 4), (mx + 10, my - 2), (mx + 2, my + 12)], fill=(220, 220, 220))
-d.rectangle([524, 498, 988, 540], fill=(255, 255, 255))
-draw_wrap(540, 504, "Bridges hit, power plants targeted; missiles reported over Poland (NATO)", F(SANS, 16), 432, fill=INK)
+# ---------- UTC timeline ----------
+d.rectangle([0, 112, W, 164], fill=WHITE, outline=INK, width=1)
+d.text((10, 116), "21 NOV — UTC TIMELINE (first-reported times)", font=F(SANS_B, 12), fill=RED)
+tl = [("03:34", "OFAC list"), ("07:15", "Haiti death"), ("09:26", "Basra fire"), ("11:27", "Hormuz hits"),
+      ("13:14", "EU budget"), ("15:11", "EU–Indonesia"), ("18:17", "Finland probe"), ("23:25", "Bahrain fire")]
+d.line([16, 140, 1008, 140], fill=GREY, width=2)
+for i, (t, lab) in enumerate(tl):
+    xx = 10 + i * 126
+    d.ellipse([xx + 8, 136, xx + 16, 144], fill=RED)
+    d.text((xx, 146), t, font=F(SANS_B, 10), fill=INK)
+    d.text((xx, 157), lab, font=F(SANS, 8), fill=GREY)
 
-# ---------- Lower grid: 4 stories ----------
-d.rectangle([24, 556, 1000, 562], fill=INK)
-boxes = [
-    (36, 576, 500, 792),
-    (524, 576, 988, 792),
-    (36, 808, 500, 990),
-    (524, 808, 988, 990),
+# ---------- Day in numbers ----------
+d.rectangle([0, 164, W, 200], fill=BLUE)
+center(W // 2, 168, "DAY IN NUMBERS", F(SANS_B, 13), fill=GOLD)
+nums = "9–6 ICJ vote  •  275 drones CLAIM  •  €1bn EU aid  •  M6.7 Peru  •  S&P −3.7% → 6,910  •  Nikkei −5.06%"
+center(W // 2, 182, nums, F(SANS_B, 12), fill=WHITE)
+nums2 = "Gold $3,515 −4.62%  •  Brent ~$90  •  4.1 km incursion  •  6,800 buildings  •  35% by 2035  •  $120bn dropped"
+center(W // 2, 192, nums2, F(SANS_B, 10), fill=(200, 220, 255))
+
+# ---------- 3 lead stories ----------
+leads = [
+    ("1  SHENZHEN FALLOUT", RED,
+     "Trump defends calling Putin 'friend'; Zelensky: 'killer'",
+     "After 19 Nov summit: nuclear-risk talks agreed. No Ukraine deal; Europe left out.",
+     "BBC / CBS • REPORTED"),
+    ("2  UKRAINE WAR WIDENS", ORANGE,
+     "Kryvyi Rih hit; ship burns off Finland; EU sends €1bn",
+     "Strike kills 2 in Zelensky's hometown. Ship burns after Sat drone hit.",
+     "Reuters / BBC • REPORTED + CLAIM"),
+    ("3  COP31 OVERTIME — ANTALYA", GREEN,
+     "Fossil fuels cut from draft; $120bn dropped",
+     "Past Friday close: 35% electricity by 2035 kept. France & Panama push back.",
+     "Reuters / AFP • REPORTED"),
 ]
+lx = [8, 348, 688]
+for i, (head, col, title, body, src) in enumerate(leads):
+    x0, x1 = lx[i], lx[i] + 328
+    d.rectangle([x0, 202, x1, 372], outline=INK, width=2, fill=WHITE)
+    d.rectangle([x0, 202, x1, 228], fill=col)
+    center((x0 + x1) // 2, 207, head, F(SANS_B, 15), fill=WHITE)
+    # simple illustration strip
+    iy = 232
+    if i == 0:
+        for cx, c, lab in [(x0 + 70, (200, 40, 40), "USA"), (x0 + 164, (210, 30, 30), "CHINA"), (x0 + 258, (40, 80, 180), "RUSSIA")]:
+            d.ellipse([cx - 16, iy, cx + 16, iy + 32], fill=(240, 210, 170), outline=INK, width=2)
+            d.rectangle([cx - 20, iy + 32, cx + 20, iy + 52], fill=c, outline=INK, width=2)
+            center(cx, iy + 37, lab, F(SANS_B, 10), fill=WHITE)
+        center((x0 + x1) // 2, iy + 56, "'friend'  vs  'killer'", F(SANS_B, 12), fill=RED)
+    elif i == 1:
+        d.rectangle([x0 + 8, iy, x1 - 8, iy + 58], fill=(70, 60, 90))
+        for bx, bh in [(x0 + 30, 36), (x0 + 90, 48), (x0 + 150, 32), (x0 + 210, 44), (x0 + 265, 34)]:
+            d.rectangle([bx, iy + 58 - bh, bx + 34, iy + 58], fill=(30, 30, 40))
+        for mx, my in [(x0 + 60, iy + 6), (x0 + 170, iy + 3), (x0 + 250, iy + 7)]:
+            d.line([mx, my, mx + 24, my + 26], fill=(255, 170, 60), width=4)
+            d.ellipse([mx + 20, my + 22, mx + 30, my + 32], fill=(255, 90, 40))
+        center((x0 + x1) // 2, iy + 62, "275 drones CLAIM  •  €1bn EU aid", F(SANS_B, 11), fill=ORANGE)
+    else:
+        d.rectangle([x0 + 8, iy, x1 - 8, iy + 58], fill=(210, 235, 220))
+        d.ellipse([x0 + 138, iy + 6, x0 + 190, iy + 52], fill=(90, 180, 110), outline=INK, width=2)
+        d.text((x0 + 144, iy + 20), "1.5°C", font=F(SANS_B, 15), fill=WHITE)
+        d.line([x0 + 30, iy + 48, x0 + 110, iy + 48], fill=RED, width=5)
+        d.text((x0 + 30, iy + 28), "fossil fuels ✗", font=F(SANS_B, 12), fill=RED)
+        d.text((x0 + 214, iy + 28), "35% by 2035", font=F(SANS_B, 12), fill=GREEN)
+        center((x0 + x1) // 2, iy + 62, "nearly 200 countries • no deal yet", F(SANS_B, 11), fill=GREEN)
+    y = draw_wrap(x0 + 10, 308, title, F(SANS_B, 14), 308, fill=INK, leading=1, max_lines=2)
+    y = draw_wrap(x0 + 10, y + 1, body, F(SANS, 10), 308, fill=(60, 60, 66), leading=1, max_lines=2)
+    d.rectangle([x0 + 8, 356, x1 - 8, 370], fill=WHITE)
+    d.text((x0 + 10, 358), src, font=F(SANS_B, 10), fill=col)
 
-# Story 1: ICJ Myanmar
-x0, y0, x1, y1 = boxes[0]
-d.rectangle([x0, y0, x1, y1], outline=INK, width=3, fill=(255, 255, 255))
-d.rectangle([x0, y0, x1, y0 + 32], fill=BLUE)
-d.text((x0 + 12, y0 + 5), "WORLD COURT  •  MYANMAR", font=F(SANS_B, 20), fill=(255, 255, 255))
-# courthouse icon
-cx = x0 + 70
-d.polygon([(cx - 44, y0 + 78), (cx + 44, y0 + 78), (cx, y0 + 48)], fill=GOLD, outline=INK)
-for i in range(4):
-    px = cx - 36 + i * 24
-    d.rectangle([px, y0 + 82, px + 12, y0 + 128], fill=(220, 220, 220), outline=INK)
-d.rectangle([cx - 46, y0 + 128, cx + 46, y0 + 138], fill=GOLD, outline=INK)
-_y = draw_wrap(x0 + 128, y0 + 44, "Court rules Myanmar committed genocide against the Rohingya", F(SANS_B, 23), x1 - x0 - 142)
-draw_wrap(x0 + 128, _y + 4, "Judges vote 9–6; state held responsible for crimes in Rakhine.", F(SANS, 17), x1 - x0 - 142, fill=GREY)
+# ---------- Map (left) + picture cards (right) ----------
+d.rectangle([8, 378, 400, 648], outline=INK, width=2, fill=(214, 232, 245))
+d.rectangle([8, 378, 400, 402], fill=BLUE)
+center(204, 383, "WORLD MAP — pins = story numbers", F(SANS_B, 13), fill=WHITE)
+# crude continents (blobs)
+conts = [
+    ([(30, 450), (90, 425), (150, 435), (140, 500), (95, 540), (55, 520)], (140, 190, 130)),   # N America
+    ([(110, 560), (150, 555), (165, 610), (135, 640), (115, 600)], (150, 200, 140)),          # S America
+    ([(195, 430), (245, 425), (250, 465), (210, 480), (195, 455)], (170, 200, 150)),          # Europe
+    ([(205, 485), (260, 480), (270, 545), (230, 575), (205, 535)], (220, 200, 130)),          # Africa
+    ([(255, 430), (360, 420), (380, 480), (320, 510), (265, 480)], (180, 205, 155)),          # Asia
+    ([(320, 545), (375, 540), (385, 580), (340, 595), (320, 570)], (200, 215, 160)),          # Oceania
+]
+for pts, col in conts:
+    d.polygon(pts, fill=col, outline=INK)
+pinpos = {
+    1: (338, 458), 2: (238, 446), 3: (252, 472), 4: (312, 488), 5: (272, 490), 6: (132, 588),
+    7: (222, 440), 8: (228, 452), 9: (52, 478), 10: (142, 598), 11: (250, 462), 12: (84, 462),
+    13: (78, 472), 14: (244, 436), 15: (300, 468), 16: (70, 452), 17: (66, 470), 18: (74, 458),
+    19: (88, 468), 20: (122, 528), 21: (98, 508), 22: (138, 618), 23: (232, 432), 24: (240, 430),
+    25: (220, 448), 26: (226, 444), 27: (214, 458), 28: (224, 442), 29: (278, 500), 30: (270, 482),
+    31: (266, 478), 32: (262, 508), 33: (258, 484), 34: (222, 528), 35: (238, 562), 36: (348, 452),
+    37: (342, 460), 38: (302, 478), 39: (318, 522), 40: (304, 486), 41: (264, 496), 42: (236, 424),
+}
+for n, (px, py) in pinpos.items():
+    pin(px, py, n)
+d.text((14, 626), "42 pins • leads 1–3 • cards 4–15 • briefs 16–42", font=F(SANS_B, 11), fill=INK)
 
-# Story 2: Peru quake
-x0, y0, x1, y1 = boxes[1]
-d.rectangle([x0, y0, x1, y1], outline=INK, width=3, fill=(255, 255, 255))
-d.rectangle([x0, y0, x1, y0 + 32], fill=(150, 90, 20))
-d.text((x0 + 12, y0 + 5), "PERU  •  EARTHQUAKE", font=F(SANS_B, 20), fill=(255, 255, 255))
-# mountains + crack + rings
-mx = x0 + 70
-d.polygon([(mx - 50, y0 + 140), (mx - 10, y0 + 70), (mx + 20, y0 + 110), (mx + 52, y0 + 140)], fill=(140, 110, 80), outline=INK)
-d.line([mx - 8, y0 + 108, mx + 2, y0 + 122, mx - 6, y0 + 138], fill=RED, width=4)
-for r in (18, 30, 42):
-    d.ellipse([mx + 30 - r, y0 + 60 - r // 2, mx + 30 + r, y0 + 60 + r // 2], outline=RED, width=2)
-center_text(mx, y0 + 146, "M 6.7", F(SANS_B, 24), fill=RED)
-_y = draw_wrap(x0 + 128, y0 + 44, "Magnitude 6.7 quake shakes Peru's Andes, felt in Lima", F(SANS_B, 23), x1 - x0 - 142)
-draw_wrap(x0 + 128, _y + 4, "Deep tremor near Junín; people flee homes. No deaths or major damage reported.", F(SANS, 17), x1 - x0 - 142, fill=GREY)
+cards = [
+    ("4 ICJ • MYANMAR", BLUE, "Rejects 9–6 genocide ruling as 'biased'", "Judgment 19 Nov; rejection 21 Nov. Rohingya welcome verdict.", "Reuters • REPORTED"),
+    ("5 HORMUZ", TEAL, "2 tankers hit off Khasab; mine claim", "UKMTO 215/216: stern + engine room. Iran says mine. No casualties.", "UKMTO • DISPUTED"),
+    ("6 PERU QUAKE", ORANGE, "M6.7 Junín, felt in Lima", "Deep tremor; people flee homes. No deaths/damage reported.", "USGS • REPORTED"),
+    ("7 UK–EU DEALS", BLUE, "3 deals: food, carbon, youth scheme", "Burnham signs in Brussels; rejoining 'on table' later.", "BBC • REPORTED"),
+    ("8 AI WEAPONS", PURPLE, "~100 back binding rules by 2028", "Geneva: US, Russia, Israel oppose. Work continues.", "NPR • REPORTED"),
+    ("9 PALISADES FIRE", RED, "Arsonist convicted; 12 dead", "LA fire destroyed 6,800+ buildings. 30-year-old guilty.", "AP • REPORTED"),
+    ("10 BRAZIL", GREEN, "Bolsonaro in ICU, stable", "Bowel obstruction in Brasília; surgery weighed.", "Al Jazeera • REPORTED"),
+    ("11 TURKEY TV", RED, "State seizes Sozcu TV", "Last major independent channel falls amid fraud scandal.", "RFI • REPORTED"),
+    ("12 NEW YORK", BLUE, "Rikers Island to close by 2032", "Mayor Mamdani announces jail-closure plan.", "BBC • FORECAST"),
+    ("13 MARKETS", ORANGE, "AI selloff: S&P −3.7% to 6,910", "Anthropic debut slides; tech worst week since 2020.", "CNBC • REPORTED"),
+    ("14 ESTONIA", BLUE, "Shuts Russia crossings Dec 1", "3 crossings closed; queues form across border.", "Straits Times • FORECAST"),
+    ("15 LADAKH VOTE", TEAL, "First elections since 2019", "Leh & Kargil vote Sat; process ends Nov 30.", "The Hindu • REPORTED"),
+]
+cx0 = 408
+for i, (head, col, title, body, src) in enumerate(cards):
+    col_i = i % 3
+    row_i = i // 3
+    x0 = cx0 + col_i * 204
+    y0 = 378 + row_i * 68
+    x1, y1 = x0 + 198, y0 + 64
+    d.rectangle([x0, y0, x1, y1], outline=INK, width=1, fill=WHITE)
+    d.rectangle([x0, y0, x1, y0 + 17], fill=col)
+    d.text((x0 + 5, y0 + 3), head, font=F(SANS_B, 10), fill=WHITE)
+    y = draw_wrap(x0 + 5, y0 + 20, title, F(SANS_B, 11), 188, fill=INK, leading=1, max_lines=2)
+    draw_wrap(x0 + 5, y, body, F(SANS, 9), 188, fill=GREY, leading=1, max_lines=2)
+    d.text((x0 + 5, y1 - 12), src, font=F(SANS_B, 8), fill=col)
 
-# Story 3: EU/UK aid to Ukraine
-x0, y0, x1, y1 = boxes[2]
-d.rectangle([x0, y0, x1, y1], outline=INK, width=3, fill=(255, 255, 255))
-d.rectangle([x0, y0, x1, y0 + 32], fill=(30, 110, 60))
-d.text((x0 + 12, y0 + 5), "EUROPE  •  AID FOR UKRAINE", font=F(SANS_B, 20), fill=(255, 255, 255))
-# drone icon
-cx, cy = x0 + 70, y0 + 92
-d.rectangle([cx - 16, cy - 10, cx + 16, cy + 10], fill=INK)
-for dx, dy in [(-38, -22), (38, -22), (-38, 22), (38, 22)]:
-    d.line([cx, cy, cx + dx, cy + dy], fill=INK, width=3)
-    d.ellipse([cx + dx - 12, cy + dy - 5, cx + dx + 12, cy + dy + 5], outline=INK, width=2)
-center_text(cx, y0 + 142, "drones", F(SANS_B, 18), fill=INK)
-_y = draw_wrap(x0 + 128, y0 + 44, "EU approves €1 billion in military aid; UK pledges 1,000+ drones", F(SANS_B, 23), x1 - x0 - 142)
-draw_wrap(x0 + 128, _y + 4, "Joint weapons purchases for Kyiv; deliveries planned through 2027.", F(SANS, 17), x1 - x0 - 142, fill=GREY)
+# ---------- Briefs by region (3 columns) ----------
+d.rectangle([8, 654, 1016, 672], fill=DARK)
+center(512, 658, "MORE OF 21 NOVEMBER — one-line briefs by region (16–42)", F(SANS_B, 13), fill=GOLD)
 
-# Story 4: Hormuz tanker
-x0, y0, x1, y1 = boxes[3]
-d.rectangle([x0, y0, x1, y1], outline=INK, width=3, fill=(255, 255, 255))
-d.rectangle([x0, y0, x1, y0 + 32], fill=(20, 90, 120))
-d.text((x0 + 12, y0 + 5), "STRAIT OF HORMUZ  •  TANKER", font=F(SANS_B, 20), fill=(255, 255, 255))
-# tanker icon
-cx, cy = x0 + 70, y0 + 100
-d.polygon([(cx - 52, cy), (cx + 52, cy), (cx + 38, cy + 26), (cx - 38, cy + 26)], fill=(60, 60, 70), outline=INK)
-d.rectangle([cx - 40, cy - 16, cx + 20, cy], fill=(200, 60, 40), outline=INK)
-d.rectangle([cx + 24, cy - 26, cx + 40, cy], fill=(220, 220, 220), outline=INK)
-# flame
-d.polygon([(cx - 20, cy - 16), (cx - 8, cy - 44), (cx + 2, cy - 16)], fill=(255, 120, 30))
-d.polygon([(cx - 14, cy - 16), (cx - 8, cy - 32), (cx - 2, cy - 16)], fill=(255, 200, 60))
-for i in range(3):
-    d.arc([cx - 50 + i * 34, cy + 30, cx - 18 + i * 34, cy + 46], 0, 180, fill=BLUE, width=3)
-_y = draw_wrap(x0 + 128, y0 + 44, "Tanker struck and set on fire near Strait of Hormuz", F(SANS_B, 23), x1 - x0 - 142)
-draw_wrap(x0 + 128, _y + 4, "Maritime warning issued off Oman; shipping on alert in key oil route.", F(SANS, 17), x1 - x0 - 142, fill=GREY)
+regions = [
+    ("NORTH AMERICA", RED, [
+        ("16", "FBI probes apparent hack of criminal database.", "REPORTED"),
+        ("17", "US teen pleads not guilty in Hindu-temple plot nr Chicago.", "AP • REPORTED"),
+        ("18", "Trump adviser Miller 'earned $15M in a year' — report.", "CLAIM"),
+        ("19", "Lock of George Washington's hair sells for $4,000.", "REPORTED"),
+    ]),
+    ("LATIN AMERICA", GREEN, [
+        ("20", "Haiti: Salvadoran soldier dies after blast (3 total).", "REPORTED"),
+        ("21", "Mexico: 'Chapo Isidro' arrested 20 Nov; unrest 21 Nov.", "BBC • REPORTED"),
+        ("22", "Argentina approves large LNG project.", "REPORTED"),
+    ]),
+    ("EUROPE", BLUE, [
+        ("23", "Denmark: Russia plot to kill rapper; Moscow denies.", "DISPUTED"),
+        ("24", "Finland probes Russian helicopter 4.1 km incursion.", "REPORTED"),
+        ("25", "French police sentenced over Zecler beating.", "AFP • REPORTED"),
+        ("26", "Costa proposes €1.78tn EU budget 2028–34.", "REPORTED"),
+        ("27", "Spain heads to Nov 29 election.", "El País • FORECAST"),
+        ("28", "Brussels: flight cancellations expected.", "FORECAST"),
+    ]),
+    ("MIDDLE EAST & GULF", ORANGE, [
+        ("29", "Bahrain blames Iran for industrial fire; UAE condemns.", "CLAIM"),
+        ("30", "Basra Hartha fire: 4 dead, 35 injured.", "REPORTED"),
+        ("31", "Iraq–Kata'ib Hezbollah joint ops centre agreed.", "REPORTED"),
+        ("32", "Saudi–Houthi trade port-strike threats.", "CLAIM"),
+        ("33", "Gaza Jabalia death (WAFA); W. Bank guard kills 1.", "REPORTED"),
+    ]),
+    ("AFRICA", TEAL, [
+        ("34", "Nigeria boat capsize: NEMA reports 24 bodies.", "REPORTED"),
+        ("35", "S. Africa ANC fights to hold key cities.", "REPORTED"),
+    ]),
+    ("ASIA-PACIFIC", PURPLE, [
+        ("36", "Japan sidelined at Shenzhen; Takaichi cool welcome.", "Japan Times • REPORTED"),
+        ("37", "S. Korea ruling party moves to impeach chief justice.", "Yonhap • FORECAST"),
+        ("38", "Nepal PM Shah: first India trip Nov 22–23.", "BBC • FORECAST"),
+        ("39", "EU–Indonesia CEPA & IPA signed.", "Commission • REPORTED"),
+        ("40", "Sensex +2.3% bucks global selloff.", "REPORTED"),
+    ]),
+    ("GLOBAL", INK, [
+        ("41", "UN: Yemen displaced +357,000 since last August.", "REPORTED"),
+        ("42", "Trafalgar Square Christmas tree felled in Norway.", "REPORTED"),
+    ]),
+]
+# layout: col A = NA+LatAm+Global, col B = Europe+Africa, col C = ME+AsiaPac
+cols = [
+    [regions[0], regions[1], regions[6]],
+    [regions[2], regions[4]],
+    [regions[3], regions[5]],
+]
+colx = [8, 348, 688]
+for ci, groups in enumerate(cols):
+    x0 = colx[ci]
+    y = 676
+    for rname, rcol, items in groups:
+        d.rectangle([x0, y, x0 + 328, y + 16], fill=rcol)
+        d.text((x0 + 6, y + 2), rname, font=F(SANS_B, 11), fill=WHITE)
+        y += 18
+        for num, text, src in items:
+            d.ellipse([x0 + 2, y, x0 + 20, y + 18], fill=rcol)
+            f = F(SANS_B, 10)
+            w = d.textlength(num, font=f)
+            d.text((x0 + 11 - w / 2, y + 3), num, font=f, fill=WHITE)
+            y2 = draw_wrap(x0 + 24, y, text, F(SANS, 11), 304, fill=INK, leading=1, max_lines=2)
+            d.text((x0 + 24, y2), src, font=F(SANS_B, 8), fill=GREY)
+            y = y2 + 11
+        y += 3
 
-# ---------- Footer ----------
-center_text(W // 2, 1000 - 6, "Also today: US sanctions four Iranians over oil revenues  •  EU–UK youth mobility deal  •  India shares see record foreign inflow", F(SANS, 15), fill=GREY)
+# ---------- DATE CHECK + footer ----------
+d.rectangle([8, 946, 1016, 994], outline=RED, width=2, fill=(255, 244, 230))
+d.text((14, 950), "DATE CHECK — excluded as other days' news (not counted in the 42):", font=F(SANS_B, 12), fill=RED)
+draw_wrap(14, 966,
+          "Shenzhen summit itself 19 Nov • 110-missile barrage night 19–20 Nov • ICJ judgment delivered 19 Nov (21 Nov = rejection) • EU €1bn Council decision 20 Nov 15:50 (21 Nov = coverage) • 'Chapo Isidro' arrested 20 Nov • OFAC 4 Iranians published 20 Nov • COP31 collapse & S. Korea minister resignation 22 Nov",
+          F(SANS, 11), 996, fill=INK, leading=2, max_lines=2)
+center(512, 998, "Sources as tagged on each story  •  Sat 21 Nov 2026 only  •  v2 — 42 stories, 7 regions, map + UTC timeline + day in numbers", F(SANS_B, 11), fill=GREY)
 
 img.save(OUT, format="PNG", optimize=True)
-print(f"wrote {OUT} {img.size}")
+print(f"wrote {OUT} {img.size} stories=42")

@@ -2,39 +2,49 @@
 [![rank](https://make.fun/badge/news-image-20261121/Vikkry88/news-image-20261121/rank.svg)](https://make.fun/bounty/news-image-20261121/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261121)
 [![reward](https://make.fun/badge/news-image-20261121/Vikkry88/news-image-20261121/reward.svg)](https://make.fun/bounty/news-image-20261121?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261121)
 
-# World News in One Picture — Saturday 21 November 2026
+# World News in One Picture — Saturday 21 November 2026 (v2: 42 stories, 7 regions, world map, UTC timeline)
 
-A newspaper front-page image that sums up the world's news of Saturday
+A dense newspaper front-page image that sums up the world's news of Saturday
 21 November 2026 in a single picture, for the make.fun `news-image-20261121`
 competition.
 
-## What the image shows
+## What the image shows (v2)
 
-The masthead reads "THE WORLD TODAY — Saturday 21 November 2026". The lead
-story, "Peace Talks by Day, Missiles by Night", pairs two panels:
+The masthead reads "THE WORLD TODAY — Saturday 21 November 2026 • 42 stories
+• 7 regions". A "how to read" strip explains the numbered map pins and the
+confidence labels. A UTC timeline (03:34–23:25 first-reported times) and a
+"day in numbers" strip (9–6 ICJ vote, 275 drones CLAIM, €1bn EU aid, M6.7
+Peru, S&P −3.7% to 6,910, Nikkei −5.06%, gold $3,515 −4.62%, Brent ~$90,
+4.1 km incursion, 6,800 buildings, 35% by 2035, $120bn dropped) run under it.
 
-- **Shenzhen Summit** — Presidents Trump (USA), Xi (China) and Putin (Russia)
-  at a table for the first-ever US–China–Russia three-way summit in Shenzhen;
-  Trump calls Putin "my friend" and reports "very good talks", with no
-  breakthrough on Ukraine.
-- **Kyiv Under Fire** — hours later Russia fires 110+ missiles and 400+
-  drones at Ukraine, striking Kyiv's bridges and power facilities, with
-  missiles reported over NATO-member Poland.
+Three illustrated lead stories:
 
-Four further stories fill the page:
+- **1 Shenzhen fallout** — Trump defends calling Putin "friend"; Zelensky
+  calls Putin a "killer"; nuclear-risk talks agreed after the 19 Nov summit;
+  no Ukraine breakthrough.
+- **2 Ukraine war widens** — Kryvyi Rih hit (2 dead), Russian ship burning
+  off Finland after a Saturday drone hit, Moscow claims 275 drones downed,
+  EU sends €1bn.
+- **3 COP31 overtime, Antalya** — fossil fuels cut from the draft, $120bn
+  adaptation goal dropped, 35% electricity by 2035 kept; France and Panama
+  push back; nearly 200 countries, no deal yet on 21 Nov.
 
-- **World Court / Myanmar** — the International Court of Justice rules that
-  Myanmar committed genocide against the Rohingya (9–6 vote).
-- **Peru / Earthquake** — a magnitude 6.7 quake in the Andes near Junín,
-  felt in Lima; no deaths or major damage reported.
-- **Europe / Aid for Ukraine** — the EU approves €1 billion in military aid
-  and the UK pledges 1,000+ drones for Ukraine.
-- **Strait of Hormuz / Tanker** — a tanker is struck and set on fire near
-  the Strait of Hormuz, prompting a maritime warning off Oman.
+Twelve picture cards (4–15): Myanmar rejects the 9–6 ICJ Rohingya genocide
+ruling; two tankers hit off Khasab (UKMTO 215/216, mine claim disputed);
+Peru M6.7; UK–EU three deals; Geneva AI-weapons talks (~100 back binding
+rules by 2028); Palisades arson conviction (12 dead, 6,800 buildings);
+Bolsonaro in ICU; Turkey seizes Sozcu TV; Rikers Island to close by 2032;
+AI selloff (S&P −3.7%); Estonia shuts Russia crossings Dec 1; Ladakh's first
+elections since 2019.
 
-A footer line adds three more of the day's stories: US sanctions on four
-Iranians over oil revenues, an EU–UK youth mobility deal, and record foreign
-investment into Indian shares.
+Twenty-seven one-line briefs (16–42) grouped by region — North America,
+Latin America, Europe, Middle East & Gulf, Africa, Asia-Pacific, Global —
+each with a source tag and a REPORTED / FORECAST / CLAIM / DISPUTED label.
+A world map carries 42 numbered pins matching the story numbers. A DATE
+CHECK box lists stories excluded as other days' news (Shenzhen summit itself
+19 Nov, the 110-missile barrage night 19–20 Nov, the ICJ judgment delivered
+19 Nov, the EU €1bn Council decision of 20 Nov 15:50, the 20 Nov "Chapo
+Isidro" arrest, the OFAC list published 20 Nov, and 22 Nov developments).
 
 ## How it was made
 
