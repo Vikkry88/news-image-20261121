@@ -68,9 +68,9 @@ def center(cx, y, text, font, fill=INK):
 
 
 def pin(cx, cy, n, col=RED):
-    d.ellipse([cx - 9, cy - 9, cx + 9, cy + 9], fill=col, outline=WHITE, width=2)
+    d.ellipse([cx - 7, cy - 7, cx + 7, cy + 7], fill=col, outline=WHITE, width=1)
     t = str(n)
-    f = F(SANS_B, 11 if n < 10 else 9)
+    f = F(SANS_B, 9 if n < 10 else 7)
     w = d.textlength(t, font=f)
     d.text((cx - w / 2, cy - f.size / 2 - 1), t, font=f, fill=WHITE)
 
@@ -178,31 +178,31 @@ conts = [
 for pts, col in conts:
     d.polygon(pts, fill=col, outline=INK)
 pinpos = {
-    1: (338, 458), 2: (238, 446), 3: (252, 472), 4: (312, 488), 5: (272, 490), 6: (132, 588),
-    7: (222, 440), 8: (228, 452), 9: (52, 478), 10: (142, 598), 11: (250, 462), 12: (84, 462),
-    13: (78, 472), 14: (244, 436), 15: (300, 468), 16: (70, 452), 17: (66, 470), 18: (74, 458),
-    19: (88, 468), 20: (122, 528), 21: (98, 508), 22: (138, 618), 23: (232, 432), 24: (240, 430),
-    25: (220, 448), 26: (226, 444), 27: (214, 458), 28: (224, 442), 29: (278, 500), 30: (270, 482),
-    31: (266, 478), 32: (262, 508), 33: (258, 484), 34: (222, 528), 35: (238, 562), 36: (348, 452),
-    37: (342, 460), 38: (302, 478), 39: (318, 522), 40: (304, 486), 41: (264, 496), 42: (236, 424),
+    1: (338, 458), 2: (238, 446), 3: (254, 474), 4: (312, 488), 5: (274, 492), 6: (132, 588),
+    7: (220, 438), 8: (230, 454), 9: (50, 480), 10: (144, 600), 11: (252, 464), 12: (86, 460),
+    13: (76, 474), 14: (246, 434), 15: (300, 466), 16: (68, 450), 17: (64, 468), 18: (76, 456),
+    19: (90, 466), 20: (120, 526), 21: (96, 506), 22: (140, 620), 23: (234, 430), 24: (242, 428),
+    25: (218, 450), 26: (228, 442), 27: (212, 460), 28: (226, 440), 29: (280, 502), 30: (272, 480),
+    31: (268, 476), 32: (264, 510), 33: (260, 486), 34: (220, 530), 35: (240, 564), 36: (350, 450),
+    37: (344, 462), 38: (304, 480), 39: (320, 524), 40: (306, 488), 41: (266, 498), 42: (238, 422),
 }
 for n, (px, py) in pinpos.items():
     pin(px, py, n)
 d.text((14, 626), "42 pins • leads 1–3 • cards 4–15 • briefs 16–42", font=F(SANS_B, 11), fill=INK)
 
 cards = [
-    ("4 ICJ • MYANMAR", BLUE, "Rejects 9–6 genocide ruling as 'biased'", "Judgment 19 Nov; rejection 21 Nov. Rohingya welcome verdict.", "Reuters • REPORTED"),
-    ("5 HORMUZ", TEAL, "2 tankers hit off Khasab; mine claim", "UKMTO 215/216: stern + engine room. Iran says mine. No casualties.", "UKMTO • DISPUTED"),
-    ("6 PERU QUAKE", ORANGE, "M6.7 Junín, felt in Lima", "Deep tremor; people flee homes. No deaths/damage reported.", "USGS • REPORTED"),
-    ("7 UK–EU DEALS", BLUE, "3 deals: food, carbon, youth scheme", "Burnham signs in Brussels; rejoining 'on table' later.", "BBC • REPORTED"),
-    ("8 AI WEAPONS", PURPLE, "~100 back binding rules by 2028", "Geneva: US, Russia, Israel oppose. Work continues.", "NPR • REPORTED"),
-    ("9 PALISADES FIRE", RED, "Arsonist convicted; 12 dead", "LA fire destroyed 6,800+ buildings. 30-year-old guilty.", "AP • REPORTED"),
-    ("10 BRAZIL", GREEN, "Bolsonaro in ICU, stable", "Bowel obstruction in Brasília; surgery weighed.", "Al Jazeera • REPORTED"),
-    ("11 TURKEY TV", RED, "State seizes Sozcu TV", "Last major independent channel falls amid fraud scandal.", "RFI • REPORTED"),
-    ("12 NEW YORK", BLUE, "Rikers Island to close by 2032", "Mayor Mamdani announces jail-closure plan.", "BBC • FORECAST"),
-    ("13 MARKETS", ORANGE, "AI selloff: S&P −3.7% to 6,910", "Anthropic debut slides; tech worst week since 2020.", "CNBC • REPORTED"),
-    ("14 ESTONIA", BLUE, "Shuts Russia crossings Dec 1", "3 crossings closed; queues form across border.", "Straits Times • FORECAST"),
-    ("15 LADAKH VOTE", TEAL, "First elections since 2019", "Leh & Kargil vote Sat; process ends Nov 30.", "The Hindu • REPORTED"),
+    ("4 ICJ • MYANMAR", BLUE, "Rejects 9–6 genocide ruling as 'biased'", "Judgment 19 Nov; rejection 21 Nov.", "Reuters • REPORTED"),
+    ("5 HORMUZ", TEAL, "2 tankers hit off Khasab; mine claim", "UKMTO 215/216. No casualties.", "UKMTO • DISPUTED"),
+    ("6 PERU QUAKE", ORANGE, "M6.7 Junín, felt in Lima", "No deaths or damage reported.", "USGS • REPORTED"),
+    ("7 UK–EU DEALS", BLUE, "3 deals: food, carbon, youth scheme", "Burnham signs in Brussels.", "BBC • REPORTED"),
+    ("8 AI WEAPONS", PURPLE, "~100 back binding rules by 2028", "US, Russia, Israel oppose.", "NPR • REPORTED"),
+    ("9 PALISADES FIRE", RED, "Arsonist convicted; 12 dead", "6,800+ buildings destroyed.", "AP • REPORTED"),
+    ("10 BRAZIL", GREEN, "Bolsonaro in ICU, stable", "Bowel obstruction; surgery weighed.", "Al Jazeera • REPORTED"),
+    ("11 TURKEY TV", RED, "State seizes Sozcu TV", "Last independent channel falls.", "RFI • REPORTED"),
+    ("12 NEW YORK", BLUE, "Rikers Island to close by 2032", "Mayor Mamdani announces plan.", "BBC • FORECAST"),
+    ("13 MARKETS", ORANGE, "AI selloff: S&P −3.7% to 6,910", "Tech worst week since 2020.", "CNBC • REPORTED"),
+    ("14 ESTONIA", BLUE, "Shuts Russia crossings Dec 1", "Queues form across border.", "Straits Times • FORECAST"),
+    ("15 LADAKH VOTE", TEAL, "First elections since 2019", "Leh & Kargil vote; ends Nov 30.", "The Hindu • REPORTED"),
 ]
 cx0 = 408
 for i, (head, col, title, body, src) in enumerate(cards):
@@ -215,7 +215,8 @@ for i, (head, col, title, body, src) in enumerate(cards):
     d.rectangle([x0, y0, x1, y0 + 17], fill=col)
     d.text((x0 + 5, y0 + 3), head, font=F(SANS_B, 10), fill=WHITE)
     y = draw_wrap(x0 + 5, y0 + 20, title, F(SANS_B, 11), 188, fill=INK, leading=1, max_lines=2)
-    draw_wrap(x0 + 5, y, body, F(SANS, 9), 188, fill=GREY, leading=1, max_lines=2)
+    draw_wrap(x0 + 5, y, body, F(SANS, 9), 188, fill=GREY, leading=1, max_lines=1)
+    d.rectangle([x0 + 4, y1 - 13, x1 - 4, y1 - 1], fill=WHITE)
     d.text((x0 + 5, y1 - 12), src, font=F(SANS_B, 8), fill=col)
 
 # ---------- Briefs by region (3 columns) ----------
@@ -295,7 +296,7 @@ d.text((14, 950), "DATE CHECK — excluded as other days' news (not counted in t
 draw_wrap(14, 966,
           "Shenzhen summit itself 19 Nov • 110-missile barrage night 19–20 Nov • ICJ judgment delivered 19 Nov (21 Nov = rejection) • EU €1bn Council decision 20 Nov 15:50 (21 Nov = coverage) • 'Chapo Isidro' arrested 20 Nov • OFAC 4 Iranians published 20 Nov • COP31 collapse & S. Korea minister resignation 22 Nov",
           F(SANS, 11), 996, fill=INK, leading=2, max_lines=2)
-center(512, 998, "Sources as tagged on each story  •  Sat 21 Nov 2026 only  •  v2 — 42 stories, 7 regions, map + UTC timeline + day in numbers", F(SANS_B, 11), fill=GREY)
+center(512, 998, "Sources as tagged on each story  •  Sat 21 Nov 2026 only  •  v3 — 42 stories, 7 regions, map + UTC timeline + day in numbers", F(SANS_B, 11), fill=GREY)
 
 img.save(OUT, format="PNG", optimize=True)
 print(f"wrote {OUT} {img.size} stories=42")
